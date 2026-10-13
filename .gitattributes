@@ -1,0 +1,2 @@
+# Store and check out text files with LF on every OS (CRLF breaks Makefile recipes on Linux CI).
+* text=auto eol=lf

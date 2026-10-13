@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.cache/
+
+# Secrets and local configuration
+.env
+
+# Large artifacts: corpus PDFs are fetched by script, models are downloaded on demand
+data/corpus/*.pdf
+models/
