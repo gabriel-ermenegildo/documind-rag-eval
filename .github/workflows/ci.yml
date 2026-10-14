@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the run that is still in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      db:
+        # Same image, credentials and host port as docker-compose.yml, so the default
+        # DATABASE_URL and TEST_DATABASE_URL work here without any override.
+        image: pgvector/pgvector:0.8.7-pg16
+        env:
+          POSTGRES_USER: documind
+          POSTGRES_PASSWORD: documind
+          POSTGRES_DB: documind
+        ports:
+          - 5433:5432
+        # The job only starts its steps after this healthcheck passes.
+        options: >-
+          --health-cmd "pg_isready -U documind -d documind"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          # Same uv as local development; Python 3.12 comes from .python-version.
+          version: "0.13.0"
+
+      - name: Install dependencies
+        # --locked fails the build if uv.lock is out of date instead of silently updating it.
+        run: uv sync --locked
+
+      - name: Lint
+        run: make lint
+
+      - name: Tests
+        run: make test
