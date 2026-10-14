@@ -280,7 +280,7 @@ Ingestão no MVP pode ser síncrona dentro de `BackgroundTasks` do FastAPI; fila
 
 | Variável | Exemplo | Uso |
 |----------|---------|-----|
-| `DATABASE_URL` | `postgresql+psycopg://documind:documind@localhost:5433/documind` | conexão (5433 é a porta publicada no host pelo `docker-compose.yml`; dentro do container o Postgres segue em 5432) |
+| `DATABASE_URL` | `postgresql+psycopg://documind:documind@127.0.0.1:5433/documind` | conexão (5433 é a porta publicada no host pelo `docker-compose.yml`; dentro do container o Postgres segue em 5432) |
 | `EMBEDDING_PROVIDER` / `EMBEDDING_MODEL` | `local` / `intfloat/multilingual-e5-base` | embeddings |
 | `EMBEDDING_DIM` | `768` | precisa bater com a coluna |
 | `LLM_PROVIDER` / `LLM_MODEL` | `gemini` / *(modelo da família Flash vigente)* | geração |

@@ -21,9 +21,9 @@ def clean_environment(monkeypatch):
 def test_defaults_point_to_the_local_compose_database():
     settings = Settings(_env_file=None)
 
-    assert settings.database_url == "postgresql+psycopg://documind:documind@localhost:5433/documind"
+    assert settings.database_url == "postgresql+psycopg://documind:documind@127.0.0.1:5433/documind"
     assert settings.test_database_url == (
-        "postgresql+psycopg://documind:documind@localhost:5433/documind_test"
+        "postgresql+psycopg://documind:documind@127.0.0.1:5433/documind_test"
     )
     assert settings.database_connect_timeout_seconds == 3
     assert settings.log_level == "INFO"
