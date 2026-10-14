@@ -2,7 +2,8 @@ name: documind
 
 services:
   db:
-    image: pgvector/pgvector:pg16
+    # Exact pgvector version, so every clone and the CI run the same database.
+    image: pgvector/pgvector:0.8.7-pg16
     environment:
       POSTGRES_USER: documind
       POSTGRES_PASSWORD: documind
