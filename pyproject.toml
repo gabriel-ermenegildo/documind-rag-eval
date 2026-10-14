@@ -36,6 +36,11 @@ select = ["E", "W", "F", "I", "UP", "B", "SIM", "ANN"]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers --import-mode=importlib"
 markers = ["integration: needs a running Postgres (make up)"]
+filterwarnings = [
+    # Starlette's TestClient now prefers httpx2 and warns when it falls back to httpx.
+    # We stay on httpx; revisit when the FastAPI documentation recommends httpx2.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+]
 
 [dependency-groups]
 dev = [
