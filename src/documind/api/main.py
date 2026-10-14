@@ -1,6 +1,5 @@
 """FastAPI application factory."""
 
-import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -8,10 +7,8 @@ from fastapi import FastAPI
 
 from documind import __version__
 from documind.api.routes import health
-from documind.config import get_settings
 from documind.db.session import get_engine
-
-LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
+from documind.logging_config import configure_logging
 
 
 @asynccontextmanager
@@ -22,7 +19,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 def create_app() -> FastAPI:
-    logging.basicConfig(level=get_settings().log_level, format=LOG_FORMAT)
+    configure_logging()
 
     app = FastAPI(title="DocuMind", version=__version__, lifespan=lifespan)
     app.include_router(health.router)

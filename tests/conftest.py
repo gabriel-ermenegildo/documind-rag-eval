@@ -1,12 +1,16 @@
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import URL, Engine, create_engine, make_url, text
 from sqlalchemy.exc import OperationalError
 
 from documind.config import get_settings
 
 MAINTENANCE_DATABASE = "postgres"
+ALEMBIC_INI = Path(__file__).resolve().parents[1] / "alembic.ini"
 
 
 def _ensure_database_exists(url: URL) -> None:
@@ -27,8 +31,8 @@ def _ensure_database_exists(url: URL) -> None:
 
 
 @pytest.fixture(scope="session")
-def db_engine() -> Iterator[Engine]:
-    """Engine bound to the dedicated test database on the real Postgres container."""
+def test_database_url() -> URL:
+    """URL of the dedicated test database, created on the real Postgres container if needed."""
     settings = get_settings()
     url = make_url(settings.test_database_url)
     if url == make_url(settings.database_url):
@@ -41,7 +45,21 @@ def db_engine() -> Iterator[Engine]:
             f"Postgres is not reachable at {url.render_as_string(hide_password=True)}. "
             "Start it with `make up`."
         )
+    return url
 
-    engine = create_engine(url)
+
+@pytest.fixture(scope="session")
+def alembic_config(test_database_url: URL) -> Config:
+    """Alembic configuration that targets the test database instead of the development one."""
+    config = Config(ALEMBIC_INI)
+    config.attributes["database_url"] = test_database_url.render_as_string(hide_password=False)
+    return config
+
+
+@pytest.fixture(scope="session")
+def db_engine(test_database_url: URL, alembic_config: Config) -> Iterator[Engine]:
+    """Engine bound to the test database, with every migration applied."""
+    command.upgrade(alembic_config, "head")
+    engine = create_engine(test_database_url)
     yield engine
     engine.dispose()
