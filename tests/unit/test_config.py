@@ -3,7 +3,12 @@ from pydantic import ValidationError
 
 from documind.config import Settings, get_settings
 
-ENV_VARS = ("DATABASE_URL", "LOG_LEVEL")
+ENV_VARS = (
+    "DATABASE_URL",
+    "TEST_DATABASE_URL",
+    "DATABASE_CONNECT_TIMEOUT_SECONDS",
+    "LOG_LEVEL",
+)
 
 
 @pytest.fixture(autouse=True)
@@ -17,6 +22,10 @@ def test_defaults_point_to_the_local_compose_database():
     settings = Settings(_env_file=None)
 
     assert settings.database_url == "postgresql+psycopg://documind:documind@localhost:5433/documind"
+    assert settings.test_database_url == (
+        "postgresql+psycopg://documind:documind@localhost:5433/documind_test"
+    )
+    assert settings.database_connect_timeout_seconds == 3
     assert settings.log_level == "INFO"
 
 
@@ -51,6 +60,14 @@ def test_environment_variable_wins_over_env_file(tmp_path, monkeypatch):
 
 def test_invalid_log_level_is_rejected(monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "LOUD")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_connect_timeout_must_be_positive(monkeypatch):
+    # The driver reads 0 as "wait forever", which is exactly what the timeout exists to prevent.
+    monkeypatch.setenv("DATABASE_CONNECT_TIMEOUT_SECONDS", "0")
 
     with pytest.raises(ValidationError):
         Settings(_env_file=None)
