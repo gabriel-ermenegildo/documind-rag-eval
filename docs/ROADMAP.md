@@ -12,13 +12,13 @@
 ---
 
 ## M0 — Fundação
-- [ ] Projeto `uv` com `src/documind`, `pyproject.toml`, ruff e pytest configurados
-- [ ] `docker-compose.yml` com Postgres 16 + pgvector (imagem `pgvector/pgvector`)
-- [ ] `config.py` com pydantic-settings + `.env.example`
-- [ ] FastAPI com `GET /health` checando o banco
-- [ ] Alembic inicial com as tabelas de ARCHITECTURE §4
-- [ ] `Makefile` (`up`, `down`, `dev`, `test`, `lint`, `migrate`)
-- [ ] GitHub Actions: lint + testes
+- [x] Projeto `uv` com `src/documind`, `pyproject.toml`, ruff e pytest configurados
+- [x] `docker-compose.yml` com Postgres 16 + pgvector (imagem `pgvector/pgvector`)
+- [x] `config.py` com pydantic-settings + `.env.example`
+- [x] FastAPI com `GET /health` checando o banco
+- [x] Alembic inicial com as tabelas de ARCHITECTURE §4
+- [x] `Makefile` (`up`, `down`, `dev`, `test`, `lint`, `migrate`)
+- [x] GitHub Actions: lint + testes
 
 **Aceite:** `make up && make migrate && make dev` → `/health` retorna `{"status": "ok", "db": "ok"}`; CI verde.
 

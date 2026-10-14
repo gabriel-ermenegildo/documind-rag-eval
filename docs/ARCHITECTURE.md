@@ -39,7 +39,7 @@ Princípio de projeto: **cada etapa é uma interface trocável**. Parser, chunke
 | Dependências | `uv` (+ `uv.lock`) | rápido, lockfile reprodutível |
 | API | FastAPI + Pydantic v2 | contrato tipado, Swagger automático |
 | Banco | PostgreSQL 16 + pgvector | vetores e dados relacionais no mesmo lugar ([ADR 0001](adr/0001-pgvector-como-vector-store.md)) |
-| ORM / driver | SQLAlchemy 2 + psycopg 3 | maduro, suporte ao tipo `vector` via `pgvector-python` |
+| ORM / driver | SQLAlchemy 2 + psycopg 3 | maduro, suporte ao tipo `vector` via `pgvector-python`; sessão síncrona ([ADR 0004](adr/0004-sqlalchemy-sincrono.md)) |
 | Migrações | Alembic | schema versionado |
 | PDF | PyMuPDF (`pymupdf`) | rápido, dá texto por página com posição |
 | Embeddings | `sentence-transformers` (local) ou API | ver SPEC D2 |
@@ -61,6 +61,7 @@ documind/
 ├── alembic/                     # migrações
 ├── src/documind/
 │   ├── config.py                # Settings (pydantic-settings, lê .env)
+│   ├── logging_config.py        # configuração de log, usada pela API e pelas migrações
 │   ├── api/
 │   │   ├── main.py              # cria o app FastAPI
 │   │   ├── deps.py              # injeção de dependências (sessão, retriever…)
@@ -281,6 +282,9 @@ Ingestão no MVP pode ser síncrona dentro de `BackgroundTasks` do FastAPI; fila
 | Variável | Exemplo | Uso |
 |----------|---------|-----|
 | `DATABASE_URL` | `postgresql+psycopg://documind:documind@127.0.0.1:5433/documind` | conexão (5433 é a porta publicada no host pelo `docker-compose.yml`; dentro do container o Postgres segue em 5432) |
+| `TEST_DATABASE_URL` | `postgresql+psycopg://documind:documind@127.0.0.1:5433/documind_test` | banco separado no mesmo servidor, usado só pela suíte de testes |
+| `DATABASE_CONNECT_TIMEOUT_SECONDS` | `3` | tempo máximo por tentativa de conexão; sem ele o `/health` fica preso quando o banco está fora |
+| `LOG_LEVEL` | `INFO` | nível de log da API e das migrações |
 | `EMBEDDING_PROVIDER` / `EMBEDDING_MODEL` | `local` / `intfloat/multilingual-e5-base` | embeddings |
 | `EMBEDDING_DIM` | `768` | precisa bater com a coluna |
 | `LLM_PROVIDER` / `LLM_MODEL` | `gemini` / *(modelo da família Flash vigente)* | geração |
@@ -290,6 +294,8 @@ Ingestão no MVP pode ser síncrona dentro de `BackgroundTasks` do FastAPI; fila
 | `RERANKER_MODEL` | `BAAI/bge-reranker-v2-m3` | rerank |
 | `DEFAULT_STRATEGY` / `DEFAULT_CHUNKING` / `DEFAULT_TOP_K` | `hybrid_rerank` / `structure` / `5` | padrões |
 | `REFUSAL_SCORE_THRESHOLD` | calibrado no dev | recusa |
+
+Cada variável entra em `config.py` e no `.env.example` no marco que passa a usá-la; até o M0 existem as quatro primeiras da tabela.
 
 ## 10. Testes
 

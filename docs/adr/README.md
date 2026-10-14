@@ -31,3 +31,4 @@ O que fica mais fácil, o que fica mais difícil, o que precisa ser revisto se X
 - [0001 — pgvector como vector store](0001-pgvector-como-vector-store.md)
 - [0002 — Núcleo sem framework de RAG](0002-nucleo-sem-framework-rag.md)
 - [0003 — Gemini como LLM](0003-gemini-como-llm.md)
+- [0004 — SQLAlchemy síncrono](0004-sqlalchemy-sincrono.md)
