@@ -49,13 +49,18 @@ Detalhes em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 <!-- TODO (M7): validar estes comandos do zero -->
 
+Pré-requisitos: [Docker](https://docs.docker.com/get-docker/), [uv](https://docs.astral.sh/uv/) e GNU `make`. No Windows, o `make` pode ser instalado com `winget install ezwinports.make` (abra um terminal novo depois).
+
 ```bash
-cp .env.example .env
-docker compose up -d
-make migrate && make dev
+cp .env.example .env   # opcional: os valores padrão já apontam para o Postgres do compose
+make up                # Postgres 16 + pgvector na porta 5433 do host
+make migrate           # cria as tabelas
+make dev               # API com reload em http://localhost:8000
 ```
 
-API em http://localhost:8000/docs.
+Swagger em http://localhost:8000/docs; `GET /health` responde `{"status": "ok", "db": "ok"}`.
+
+Outros comandos: `make test` (precisa do `make up`), `make lint` e `make down`.
 
 ## Decisões técnicas
 
