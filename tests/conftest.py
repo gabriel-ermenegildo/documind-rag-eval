@@ -1,6 +1,7 @@
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
 
+import pymupdf
 import pytest
 from alembic import command
 from alembic.config import Config
@@ -28,6 +29,41 @@ def _ensure_database_exists(url: URL) -> None:
                 connection.execute(text(f'CREATE DATABASE "{url.database}"'))
     finally:
         admin_engine.dispose()
+
+
+@pytest.fixture
+def make_pdf() -> Callable[..., bytes]:
+    """Build a small synthetic PDF in memory: one page per string, "" for a blank page.
+
+    Tests never use real PDFs, so the repository carries no copyrighted documents.
+    """
+
+    def build(pages: Sequence[str], title: str | None = None) -> bytes:
+        with pymupdf.open() as pdf:
+            for text in pages:
+                page = pdf.new_page()
+                if text:
+                    page.insert_text((72, 72), text)
+            if title is not None:
+                pdf.set_metadata({"title": title})
+            return pdf.tobytes()
+
+    return build
+
+
+@pytest.fixture
+def make_scanned_pdf() -> Callable[[], bytes]:
+    """Build a PDF whose only page is an image, like a scan: there is no text layer."""
+
+    def build() -> bytes:
+        with pymupdf.open() as pdf:
+            page = pdf.new_page()
+            pixmap = pymupdf.Pixmap(pymupdf.csRGB, pymupdf.IRect(0, 0, 40, 40), False)
+            pixmap.clear_with(200)
+            page.insert_image(pymupdf.Rect(72, 72, 272, 272), pixmap=pixmap)
+            return pdf.tobytes()
+
+    return build
 
 
 @pytest.fixture(scope="session")

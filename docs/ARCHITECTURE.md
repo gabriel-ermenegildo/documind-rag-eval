@@ -163,7 +163,9 @@ CREATE TABLE query_logs (                      -- observabilidade (RF18)
 ## 5. Ingestão
 
 ### Parser
-Entrada: bytes do PDF. Saída: lista de páginas `(page_number, text, char_start, char_end)` sobre o **texto completo concatenado** do documento. PDFs sem camada de texto → status `failed` com motivo claro (sem OCR, ver SPEC §3).
+Entrada: bytes do PDF. Saída: lista de páginas `(page_number, text, char_start, char_end)` sobre o **texto completo concatenado** do documento (páginas unidas por `"\n\n"`, de modo que `texto[char_start:char_end]` é o texto da página). PDFs sem camada de texto, protegidos por senha ou ilegíveis → status `failed` com motivo claro (sem OCR, ver SPEC §3).
+
+O texto extraído não passa por normalização Unicode agressiva: NFKC transformaria o ordinal `º` de "Art. 5º" em `o`. A única transformação é expandir ligaduras tipográficas (`ﬁ` → `fi`), feita pelo próprio PyMuPDF, para que citações digitadas possam ser encontradas no texto.
 
 ### Estratégias de chunking
 

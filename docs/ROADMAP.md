@@ -23,7 +23,7 @@
 **Aceite:** `make up && make migrate && make dev` → `/health` retorna `{"status": "ok", "db": "ok"}`; CI verde.
 
 ## M1 — Ingestão
-- [ ] Parser PyMuPDF retornando páginas com offsets
+- [x] Parser PyMuPDF retornando páginas com offsets
 - [ ] `FixedSizeChunker` com overlap, preservando página e offsets
 - [ ] `Embedder` local (decidir SPEC D2 → ADR)
 - [ ] Pipeline parse → chunk → embed → save, com dedupe por SHA-256
@@ -83,6 +83,7 @@
 - [ ] README final: GIF da demo, diagrama, tabela de resultados, "como rodar em 3 comandos", decisões e limitações
 - [ ] Dockerfile da API e `docker compose up` subindo tudo
 - [ ] Revisão geral: código morto, TODOs, docstrings
+- [ ] Escolher a licença do repositório, compatível com a AGPL-3.0 do PyMuPDF
 - [ ] (opcional) Deploy de demo
 
 **Aceite:** alguém clona o repo, roda 3 comandos e reproduz a demo e a tabela.
