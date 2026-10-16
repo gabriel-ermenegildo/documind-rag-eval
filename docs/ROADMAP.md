@@ -24,7 +24,7 @@
 
 ## M1 — Ingestão
 - [x] Parser PyMuPDF retornando páginas com offsets
-- [ ] `FixedSizeChunker` com overlap, preservando página e offsets
+- [x] `FixedSizeChunker` com overlap, preservando página e offsets
 - [ ] `Embedder` local (decidir SPEC D2 → ADR)
 - [ ] Pipeline parse → chunk → embed → save, com dedupe por SHA-256
 - [ ] Rotas `POST/GET/DELETE /documents`
